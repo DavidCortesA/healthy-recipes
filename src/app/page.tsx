@@ -199,7 +199,7 @@ export default function Home() {
             <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
               Explora por Categoría
             </h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+            <p className="text-lg text-neutral-100 max-w-2xl mx-auto">
               Encuentra la receta perfecta para cualquier momento del día
             </p>
           </div>
@@ -224,7 +224,7 @@ export default function Home() {
       </section>
 
       {/* Featured Recipes Section */}
-      <section className="section">
+      <section className="section bg-amber-50">
         <div className="container-app">
           <div className="flex justify-between items-end mb-12">
             <div>

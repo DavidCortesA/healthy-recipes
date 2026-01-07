@@ -1,0 +1,43 @@
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .email('Por favor ingresa un email válido')
+    .min(1, 'El email es requerido'),
+  password: z
+    .string()
+    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .min(1, 'La contraseña es requerida'),
+});
+
+export const registerSchema = z.object({
+  email: z
+    .string()
+    .email('Por favor ingresa un email válido')
+    .min(1, 'El email es requerido'),
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .regex(/[A-Z]/, 'La contraseña debe contener al menos una mayúscula')
+    .regex(/[0-9]/, 'La contraseña debe contener al menos un número'),
+  confirmPassword: z
+    .string()
+    .min(1, 'Por favor confirma tu contraseña'),
+  fullName: z
+    .string()
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'El nombre no puede exceder 100 caracteres'),
+  username: z
+    .string()
+    .min(3, 'El usuario debe tener al menos 3 caracteres')
+    .max(30, 'El usuario no puede exceder 30 caracteres')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'El usuario solo puede contener letras, números, guiones y guiones bajos')
+    .optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword'],
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
