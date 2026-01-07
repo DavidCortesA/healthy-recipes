@@ -1,22 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/ui/Input';
 import Alert from '@/components/ui/Alert';
-import { loginUser } from '@/lib/actions/auth';
-import { loginSchema, type LoginInput } from '@/lib/validations/auth';
+import { forgotPassword } from '@/lib/actions/auth';
+import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validations/auth';
 import { ZodError } from 'zod';
 import Button from '../ui/Button';
 
-export default function LoginForm() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [errors, setErrors] = useState<Partial<Record<keyof LoginInput, string>>>({});
+export default function ForgotForm() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordInput, string>>>({});
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{
     type: 'success' | 'error';
@@ -24,16 +19,12 @@ export default function LoginForm() {
   } | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setEmail(e.target.value);
     // Limpiar error del campo cuando el usuario empieza a escribir
-    if (errors[name as keyof LoginInput]) {
+    if (errors.email) {
       setErrors(prev => ({
         ...prev,
-        [name]: '',
+        email: '',
       }));
     }
   };
@@ -45,34 +36,31 @@ export default function LoginForm() {
     setErrors({});
 
     try {
+
       // Validar con Zod
-      const validatedData = loginSchema.parse(formData);
+      const validatedData = forgotPasswordSchema.parse({ email });
 
       // Llamar a la acción de servidor
-      const result = await loginUser(validatedData);
+      const result = await forgotPassword(validatedData.email);
 
       if (result.success) {
         setAlert({
           type: 'success',
-          message: result.message || 'Iniciando sesión...',
+          message: result.message || 'Instrucciones enviadas a tu email',
         });
-        // Redirigir después de 1 segundo
-        setTimeout(() => {
-          router.push('/');
-        }, 1000);
       } else {
         setAlert({
           type: 'error',
-          message: result.error || 'Error al iniciar sesión',
+          message: result.error || 'Ocurrió un error al intentar recuperar la contraseña',
         });
       }
     } catch (error) {
       if (error instanceof ZodError) {
         // Convertir errores de Zod a objeto de errores
-        const newErrors: Partial<Record<keyof LoginInput, string>> = {};
+        const newErrors: Partial<Record<keyof ForgotPasswordInput, string>> = {};
         error.issues.forEach(err => {
           if (err.path[0]) {
-            newErrors[err.path[0] as keyof LoginInput] = err.message;
+            newErrors[err.path[0] as keyof ForgotPasswordInput] = err.message;
           }
         });
         setErrors(newErrors);
@@ -85,13 +73,14 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="card">
         <h2 className="text-2xl font-bold text-center mb-6 text-primary-600">
-          Inicia Sesión
+          Recuperar Contraseña
         </h2>
 
         {alert && (
@@ -103,35 +92,21 @@ export default function LoginForm() {
             label="Email"
             type="email"
             placeholder="tu@email.com"
-            value={formData.email}
-            onChange={(e) => handleInputChange({...e, target: {...e.target, name: 'email'}})}
+            value={email || ''}
+            onChange={(e) => handleInputChange(e)}
             error={errors.email}
             required
             className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
-          <Input
-            label="Contraseña"
-            type="password"
-            placeholder="Tu contraseña"
-            value={formData.password}
-            onChange={(e) => handleInputChange({...e, target: {...e.target, name: 'password'}})}
-            error={errors.password}
-            required
-            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
-          />
-
           <Button type="submit" variant="primary" size="md" fullWidth isLoading={loading} className="w-full">
-            {loading ? 'Cargando...' : 'Iniciar Sesión'}
+            {loading ? 'Cargando...' : 'Enviar Instrucciones'}
           </Button>
         </form>
 
         <div className="mt-6 space-y-4">
-          <Link
-            href="/forgot-password"
-            className="link text-center block text-sm"
-          >
-            ¿Olvidaste tu contraseña?
+          <Link href="/login" className="link text-sm">
+            ¿Recordaste tu contraseña? Inicia sesión aquí
           </Link>
 
           <div className="relative">

@@ -1,49 +1,73 @@
-type Mode = 'primary' | 'secondary' | 'tertiary' | 'disabled';
+import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { Loader2 } from 'lucide-react';
 
-interface ButtonProps {
-  label: string;
-  className?: string;
-  onClick?: () => void;
-  mode?: Mode;
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
-export default function Button({ onClick, className, label, mode }: ButtonProps ) {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      children,
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      leftIcon,
+      rightIcon,
+      fullWidth = false,
+      disabled,
+      className = '',
+      ...props
+    },
+    ref
+  ) => {
+    const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed';
 
-  if (mode === 'primary') {
+    const variants = {
+      primary: 'btn-primary',
+      secondary: 'btn-secondary',
+      outline: 'btn-outline',
+      ghost: 'btn-ghost',
+      danger: 'bg-error hover:bg-error-dark text-white'
+    };
+
+    const sizes = {
+      sm: 'px-3 py-2 text-sm',
+      md: 'px-6 py-3 text-base',
+      lg: 'px-8 py-4 text-lg'
+    };
+
+    const widthClass = fullWidth ? 'w-full' : '';
+
     return (
       <button
-        onClick={onClick}
-        className={`btn-primary ${className} cursor-pointer`}
+        ref={ref}
+        disabled={disabled || isLoading}
+        className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${widthClass} ${className}`}
+        {...props}
       >
-        {label}
-      </button>
-    );
-  } else if (mode === 'secondary') {
-    return (
-      <button
-        onClick={onClick}
-        className={`btn-outline ${className} cursor-pointer`}
-      >
-        {label}
-      </button>
-    );
-  } else if (mode === 'tertiary') {
-    return (
-      <button
-        onClick={onClick}
-        className={`btn-secondary ${className} cursor-pointer`}
-      >
-        {label}
-      </button>
-    );
-  } else if (mode === 'disabled') {
-    return (
-      <button
-        className={`bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded cursor-not-allowed ${className} cursor-none`}
-        disabled
-      >
-        {label}
+        {isLoading ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>Cargando...</span>
+          </>
+        ) : (
+          <>
+            {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+            {children}
+            {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+          </>
+        )}
       </button>
     );
   }
-}
+);
+
+Button.displayName = 'Button';
+
+export default Button;

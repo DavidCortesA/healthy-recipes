@@ -29,7 +29,7 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className="bg-white border-b border-border sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white sticky top-0 z-50 shadow-sm">
       <div className="container-app">
         <div className="flex items-center justify-between h-16">
           
@@ -71,18 +71,12 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {!isAuthenticated ? (
               <>
-                <Button
-                  label="Iniciar Sesión"
-                  onClick={handleLogin}
-                  mode="secondary"
-                  className="text-primary-600 hover:text-primary-700 font-medium px-4 py-2 rounded-lg hover:bg-primary-50 transition-all"
-                />
-                <Button
-                  label="Registrarse"
-                  onClick={handleRegister}
-                  mode="primary"
-                  className="btn-primary"
-                />
+                <Button variant="ghost" onClick={handleLogin}>
+                  Iniciar Sesión
+                </Button>
+                <Button variant="primary" onClick={handleRegister}>
+                  Registrarse
+                </Button>
               </>
             ) : (
               <div className="flex items-center gap-3">

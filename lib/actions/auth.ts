@@ -113,3 +113,27 @@ export async function signOut() {
     };
   }
 }
+
+export async function forgotPassword(email: string) {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message || 'Error al enviar el correo de recuperación',
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Correo de recuperación enviado correctamente',
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return {
+      success: false,
+      error: message,
+    };
+  }
+}

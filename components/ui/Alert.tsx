@@ -1,43 +1,57 @@
-import { ReactNode } from 'react';
-
-type AlertType = 'success' | 'error' | 'warning' | 'info';
+import { ReactNode } from "react";
+import { X } from "lucide-react";
 
 interface AlertProps {
-  type: AlertType;
-  message: string | ReactNode;
-  className?: string;
+  children: ReactNode;
+  variant?: 'success' | 'error' | 'warning' | 'info';
+  title?: string;
+  icon?: ReactNode;
   onClose?: () => void;
+  className?: string;
 }
 
-export default function Alert({ type, message, className = '', onClose }: AlertProps) {
-  const styles = {
+export function Alert({
+  children,
+  variant = 'info',
+  title,
+  icon,
+  onClose,
+  className = ''
+}: AlertProps) {
+  const variants = {
     success: 'alert-success',
     error: 'alert-error',
     warning: 'alert-warning',
-    info: 'alert-info',
+    info: 'alert-info'
   };
 
-  const icons = {
+  const defaultIcons = {
     success: '✓',
-    error: '✕',
+    error: '✗',
     warning: '⚠',
-    info: 'ℹ',
+    info: 'ℹ'
   };
 
   return (
-    <div className={`alert ${styles[type]} ${className}`} role="alert">
+    <div className={`alert ${variants[variant]} ${className}`}>
       <div className="flex items-start gap-3">
-        <span className="text-lg font-bold flex-shrink-0">{icons[type]}</span>
+        {icon !== undefined ? (
+          icon && <span className="shrink-0 text-lg">{icon}</span>
+        ) : (
+          <span className="shrink-0 text-lg">{defaultIcons[variant]}</span>
+        )}
+        
         <div className="flex-1">
-          {typeof message === 'string' ? <p>{message}</p> : message}
+          {title && <p className="font-bold mb-1">{title}</p>}
+          <div className="text-sm">{children}</div>
         </div>
+
         {onClose && (
           <button
             onClick={onClose}
-            className="flex-shrink-0 text-lg hover:opacity-70 transition-opacity"
-            aria-label="Cerrar"
+            className="shrink-0 p-1 hover:opacity-70 transition-opacity"
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         )}
       </div>

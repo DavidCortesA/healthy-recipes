@@ -39,5 +39,13 @@ export const registerSchema = z.object({
   path: ['confirmPassword'],
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .email('Por favor ingresa un email válido')
+    .min(1, 'El email es requerido'),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

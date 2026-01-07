@@ -1,8 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { Heart, Clock, Users, Flame, Star, Bookmark, Share2, Printer, Check } from 'lucide-react';
+import Image from 'next/image';
 
-export default function RecipeDetailPage() {
+export default function RecipeDetailPage({ id }: { id: string | string[] | undefined }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [servings, setServings] = useState(4);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -71,13 +72,16 @@ export default function RecipeDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Hero Image */}
       <div className="relative h-[400px] md:h-[500px] w-full">
-        <img
+        <Image
           src={recipe.image}
           alt={recipe.title}
           className="w-full h-full object-cover"
+          width={1080}
+          height={720}
+          priority
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
         
@@ -215,7 +219,7 @@ export default function RecipeDetailPage() {
                   >
                     <button
                       onClick={() => toggleStep(instruction.step)}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                         completedSteps.includes(instruction.step)
                           ? 'bg-primary-500 text-white'
                           : 'bg-white border-2 border-neutral-300'
@@ -248,10 +252,12 @@ export default function RecipeDetailPage() {
             {/* Author Card */}
             <div className="card">
               <div className="flex items-center gap-4 mb-4">
-                <img
+                <Image
                   src={recipe.author.avatar}
                   alt={recipe.author.name}
                   className="w-16 h-16 rounded-full"
+                  width={64}
+                  height={64}
                 />
                 <div>
                   <h3 className="font-bold text-neutral-900">{recipe.author.name}</h3>

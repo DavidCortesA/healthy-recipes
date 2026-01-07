@@ -8,6 +8,7 @@ import Alert from '@/components/ui/Alert';
 import { registerUser } from '@/lib/actions/auth';
 import { registerSchema, type RegisterInput } from '@/lib/validations/auth';
 import { ZodError } from 'zod';
+import Button from '../ui/Button';
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function RegisterForm() {
       if (error instanceof ZodError) {
         // Convertir errores de Zod a objeto de errores
         const newErrors: Partial<Record<keyof typeof errors, string>> = {};
-        error.errors.forEach(err => {
+        error.issues.forEach(err => {
           if (err.path[0]) {
             newErrors[err.path[0] as keyof typeof errors] = err.message;
           }
@@ -127,6 +128,7 @@ export default function RegisterForm() {
             }}
             error={errors.fullName}
             required
+            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
           <Input
@@ -142,6 +144,7 @@ export default function RegisterForm() {
             }}
             error={errors.email}
             required
+            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
           <Input
@@ -157,6 +160,7 @@ export default function RegisterForm() {
             }}
             error={errors.username}
             helperText="Solo letras, números, guiones y guiones bajos"
+            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
           <Input
@@ -173,6 +177,7 @@ export default function RegisterForm() {
             error={errors.password}
             required
             helperText="Debe contener mayúscula y número"
+            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
           <Input
@@ -186,17 +191,14 @@ export default function RegisterForm() {
                 target: { ...e.target, name: 'confirmPassword' }
               });
             }}
-            error={errors.confirmPassword}
+            error={errors.password}
             required
+            className="text-primary-700 active:text-primary-400 focus:text-primary-400"
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full"
-          >
-            {loading ? 'Creando cuenta...' : 'Registrarse'}
-          </button>
+          <Button type="submit" variant="primary" size="md" fullWidth isLoading={loading} className="w-full">
+            {loading ? 'Cargando...' : 'Crear Cuenta'}
+          </Button>
         </form>
 
         <div className="mt-6 space-y-4">
