@@ -54,7 +54,7 @@ export function Pagination({
         className="p-2 rounded-lg border border-border hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         aria-label="Página anterior"
       >
-        <ChevronLeft className="w-5 h-5" />
+        <ChevronLeft className="w-5 h-5"  color="#000" />
       </button>
 
       {/* Page Numbers */}
@@ -92,7 +92,7 @@ export function Pagination({
         className="p-2 rounded-lg border border-border hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         aria-label="Página siguiente"
       >
-        <ChevronRight className="w-5 h-5" />
+        <ChevronRight className="w-5 h-5" color="#000" />
       </button>
     </nav>
   );

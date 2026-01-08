@@ -5,11 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from '../ui/Button';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Cambia a true para ver usuario autenticado
   const route = useRouter();
+  const { user, profile, signOut } = useAuth();
 
   const handleLogin = () => {
     // Lógica para ir a login
@@ -20,11 +21,6 @@ export default function Navbar() {
     // Lógica para ir a register
     route.push('/register');
   }
-  
-  const user = {
-    name: 'María García',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria'
-  };
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -60,7 +56,7 @@ export default function Navbar() {
               Sobre Nosotros
             </Link>
             <Link 
-              href="#recetas" 
+              href="recipes" 
               className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
             >
               Recetas
@@ -69,7 +65,7 @@ export default function Navbar() {
 
           {/* Botones de autenticación / Usuario - Derecha - Desktop */}
           <div className="hidden md:flex items-center gap-3">
-            {!isAuthenticated ? (
+            {!user && !profile ? (
               <>
                 <Button variant="ghost" onClick={handleLogin}>
                   Iniciar Sesión
@@ -80,25 +76,25 @@ export default function Navbar() {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <button className="relative group">
-                  {user.avatar ? (
+                <div className="relative group">
+                  {profile?.avatar_url ? (
                     <Image 
-                      src={user.avatar} 
-                      alt={user.name}
+                      src={profile?.avatar_url} 
+                      alt={profile?.full_name}
                       className="w-10 h-10 rounded-full border-2 border-primary-500 hover:border-primary-600 transition-colors cursor-pointer"
                       width={32}
                       height={32}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold hover:bg-primary-600 transition-colors cursor-pointer">
-                      {user.name.charAt(0)}
+                      {profile?.full_name.charAt(0)}
                     </div>
                   )}
                   
                   {/* Dropdown menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-card border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="p-3 border-b border-border">
-                      <p className="font-medium text-neutral-900">{user.name}</p>
+                      {/* <p className="font-medium text-neutral-900">{user.name}</p> */}
                       <p className="text-sm text-neutral-500">Ver perfil</p>
                     </div>
                     <a href="#mis-recetas" className="block px-4 py-2 text-neutral-700 hover:bg-primary-50 transition-colors">
@@ -111,13 +107,13 @@ export default function Navbar() {
                       Configuración
                     </a>
                     <button 
-                      onClick={() => setIsAuthenticated(false)}
+                      onClick={() => signOut()}
                       className="w-full text-left px-4 py-2 text-error hover:bg-error-light/10 transition-colors border-t border-border"
                     >
                       Cerrar Sesión
                     </button>
                   </div>
-                </button>
+                </div>
               </div>
             )}
           </div>
@@ -158,7 +154,7 @@ export default function Navbar() {
               Sobre Nosotros
             </a>
             <a
-              href="#recetas"
+              href="recipes"
               className="block px-4 py-3 text-neutral-700 hover:bg-primary-50 hover:text-primary-600 rounded-lg transition-colors font-medium"
               onClick={toggleMenu}
             >
@@ -167,13 +163,10 @@ export default function Navbar() {
 
             {/* Usuario / Auth - Móvil */}
             <div className="pt-4 border-t border-border mt-4">
-              {!isAuthenticated ? (
+              {!user && !profile ? (
                 <div className="space-y-2 px-4">
                   <button 
-                    onClick={() => {
-                      setIsAuthenticated(true);
-                      toggleMenu();
-                    }}
+                    onClick={handleLogin}
                     className="w-full text-center text-primary-600 hover:text-primary-700 font-medium px-4 py-3 rounded-lg hover:bg-primary-50 transition-all border border-primary-500"
                   >
                     Iniciar Sesión
@@ -188,21 +181,21 @@ export default function Navbar() {
               ) : (
                 <div className="space-y-1">
                   <div className="flex items-center gap-3 px-4 py-3 bg-primary-50 rounded-lg">
-                    {user.avatar ? (
+                    {profile?.avatar_url ? (
                       <Image 
-                        src={user.avatar} 
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full border-2 border-primary-500"
+                        src={profile?.avatar_url} 
+                        alt={profile?.full_name}
+                        className="w-10 h-10 rounded-full border-2 border-primary-500 hover:border-primary-600 transition-colors cursor-pointer"
                         width={32}
                         height={32}
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold">
-                        {user.name.charAt(0)}
+                      <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold hover:bg-primary-600 transition-colors cursor-pointer">
+                        {profile?.full_name.charAt(0)}
                       </div>
                     )}
                     <div>
-                      <p className="font-medium text-neutral-900">{user.name}</p>
+                      <p className="font-medium text-neutral-900">{profile?.full_name}</p>
                       <p className="text-sm text-neutral-600">Ver perfil</p>
                     </div>
                   </div>
@@ -229,7 +222,7 @@ export default function Navbar() {
                   </a>
                   <button 
                     onClick={() => {
-                      setIsAuthenticated(false);
+                      signOut();
                       toggleMenu();
                     }}
                     className="w-full text-left px-4 py-3 text-error hover:bg-error-light/10 rounded-lg transition-colors border-t border-border mt-2"

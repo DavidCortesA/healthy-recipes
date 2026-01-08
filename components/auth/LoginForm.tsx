@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Input from '@/components/ui/Input';
-import Alert from '@/components/ui/Alert';
 import { loginUser } from '@/lib/actions/auth';
 import { loginSchema, type LoginInput } from '@/lib/validations/auth';
 import { ZodError } from 'zod';
 import Button from '../ui/Button';
+import { Alert } from '../ui/Alert';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -45,10 +45,7 @@ export default function LoginForm() {
     setErrors({});
 
     try {
-      // Validar con Zod
       const validatedData = loginSchema.parse(formData);
-
-      // Llamar a la acción de servidor
       const result = await loginUser(validatedData);
 
       if (result.success) {
@@ -56,8 +53,9 @@ export default function LoginForm() {
           type: 'success',
           message: result.message || 'Iniciando sesión...',
         });
-        // Redirigir después de 1 segundo
+        
         setTimeout(() => {
+          router.refresh(); // ← Forzar refresh del servidor
           router.push('/');
         }, 1000);
       } else {
@@ -68,7 +66,6 @@ export default function LoginForm() {
       }
     } catch (error) {
       if (error instanceof ZodError) {
-        // Convertir errores de Zod a objeto de errores
         const newErrors: Partial<Record<keyof LoginInput, string>> = {};
         error.issues.forEach(err => {
           if (err.path[0]) {
@@ -85,7 +82,7 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -95,7 +92,7 @@ export default function LoginForm() {
         </h2>
 
         {alert && (
-          <Alert type={alert.type} message={alert.message} className="mb-4" />
+          <Alert variant={alert.type} className="mb-4">{alert.message}</Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
