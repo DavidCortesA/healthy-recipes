@@ -2,14 +2,15 @@ export interface Recipe {
   id: string;
   title: string;
   description?: string;
-  image: string;
+  image_url: string;
   author: {
     name: string;
     avatar: string;
   };
+  total_time: number;
   category: string;
-  prepTime: number;
-  cookTime: number;
+  prep_time: number;
+  cook_time: number;
   servings: number;
   difficulty: 'Fácil' | 'Media' | 'Difícil';
   calories: number;
